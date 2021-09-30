@@ -17,14 +17,19 @@ int main(int argc, char* argv[]) {
 
 	}
 
+	Mat copy = img.clone();
+
 	//allocate memory location
 	int histogram[256];
+	int cNew[256];
 	double prob[256];
 	double cprob[256];
+	
 
 	//initialized to 0
 	for (int x=0; x < 256; x++) {
 		histogram[x] = 0;
+		cNew[x] = 0;
 		prob[x] = 0.0;
 		cprob[x] = 0.0;
 	}
@@ -55,9 +60,26 @@ int main(int argc, char* argv[]) {
 		printf("%f ", cprob[i]);
 	}
 
+	//Scale cumulative probability
+	for (int i = 0; i < 256; i++) {
+		cNew[i] = cvRound(cprob[i] * 255);
+	}
+
+
+	//
+	int z = 0;
+	for (int i = 0; i < img.rows; i++) {
+		for (int j = 0; j < img.cols; j++) {
+			z = cNew[(int)img.at<uchar>(i,j)];
+			copy.at<uchar>(i,j) = (uchar)z;
+		}
+	}
+
 	namedWindow("Image");
 	imshow("Image", img);
 
+	namedWindow("Equalized Image");
+	imshow("Equalized Image", copy);
 
 
 	waitKey(0);
